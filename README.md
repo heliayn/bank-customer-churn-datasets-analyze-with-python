@@ -1,77 +1,97 @@
-# Bank Customer Churn Analysis
+# Bank Customer Churn Analysis | Exploratory Data Analysis (EDA)
 
-Exploratory Data Analysis (EDA) on a bank customer churn dataset, performed with Python, Pandas, and Seaborn. The goal of this project is to explore customer data, clean and prepare it, and visualize patterns that may relate to customer churn.
+An undergraduate-level Python/Jupyter project investigating how demographic, financial, and behavioral customer attributes are associated with customer churn (`Exited`). The project is **exploratory and descriptive**, not a deployed prediction system. Notebook explanations are primarily written in Persian.
 
-> **Note:** Code comments and markdown explanations inside the notebook are written in Persian (Farsi).
+## Research Question and Scope
+
+Which characteristics of bank customers are associated with churn, and which customer groups warrant further investigation? This project inspects, prepares, visualizes, and compares customer records; it also discusses practical implications and the limitations of observational data.
 
 ## Dataset
 
-The dataset (`Customer-Churn-Records.csv`) contains **10,000 records** and **18 features**, including:
+- **File:** `Customer-Churn-Records.csv`
+- **Size:** 10,000 customer records and 18 original columns (including identifiers and the target).
+- **Target:** `Exited` (`0`: retained, `1`: churned).
+- **Overall churn rate:** 20.38% (2,038 / 10,000).
+- **Fields:** `RowNumber`, `CustomerId`, `Surname`, `CreditScore`, `Geography`, `Gender`, `Age`, `Tenure`, `Balance`, `NumOfProducts`, `HasCrCard`, `IsActiveMember`, `EstimatedSalary`, `Exited`, `Complain`, `Satisfaction Score`, `Card Type`, `Point Earned`.
+- **Countries:** France, Germany, Spain.
+- **Card types:** DIAMOND, GOLD, PLATINUM, SILVER.
 
-- `CreditScore` — customer's credit score
-- `Geography` — customer's country (France, Germany, Spain)
-- `Gender`
-- `Age`
-- `Tenure` — number of years as a customer
-- `Balance` — account balance
-- `NumOfProducts` — number of bank products used
-- `HasCrCard` — whether the customer has a credit card
-- `IsActiveMember`
-- `EstimatedSalary`
-- `Exited` — whether the customer churned (target variable)
-- `Complain`
-- `Satisfaction Score`
-- `Card Type` (Diamond, Gold, Silver, Platinum)
-- `Point Earned`
+The CSV is included with the project. Its original publication details are not established in these files; add the original dataset URL and license if known.
 
-## Steps Performed
+## Files
 
-### 1. Data Loading & Inspection
-- Loaded the dataset with Pandas
-- Reviewed the first rows and column info (`.head()`, `.info()`)
+| File | Purpose |
+| --- | --- |
+| `data_set_analyze(1).ipynb` | Main Jupyter notebook containing data preparation, EDA, plots, churn-rate comparisons, outlier analysis, and interpretation. |
+| `Customer-Churn-Records.csv` | Input dataset. |
+| `README.md` | Project overview and run instructions. |
+| `Bank_Churn_Project_Guide_FA.docx` | Persian academic introduction and project guidance for the instructor. |
 
-### 2. Data Cleaning
-- Removed irrelevant identifier columns (`RowNumber`, `CustomerId`, `Surname`)
-- Checked for missing values across all columns (none found)
+## Workflow in the Notebook
 
-### 3. Data Preprocessing
-- Encoded `Gender` as a binary variable (Male = 1, Female = 0)
-- One-hot encoded categorical columns (`Geography`, `Card Type`), dropping the first category to avoid redundancy
-- Standardized numeric columns (`CreditScore`, `Age`, `Balance`, `EstimatedSalary`) using z-score normalization for comparison purposes
+1. **Load and inspect:** read the CSV with Pandas; inspect sample rows, shape, types, and summary statistics.
+2. **Clean:** drop `RowNumber`, `CustomerId`, and `Surname`; check missing values (none reported in the CSV).
+3. **Encode categorical variables:** map `Gender` to `Female=0`, `Male=1`; one-hot encode `Geography` and `Card Type` with `drop_first=True`.
+4. **Examine associations:** plot a correlation heatmap; inspect the unusually high `Complain`–`Exited` association and cross-tabulate complaints versus churn.
+5. **Visualize distributions:** generate counts, histograms, and comparative boxplots for customer features and churn status.
+6. **Compare churn rates:** group by gender, country, card type, credit-card ownership, activity status, number of products, and satisfaction score; show counts, churned customers, and rates.
+7. **Find potential outliers:** compute Q1, Q3, IQR, detection bounds, and outlier counts; plot feature boxplots and show sample outlier records.
+8. **Interpret and conclude:** summarize observed patterns, managerial hypotheses, and limitations.
 
-### 4. Exploratory Analysis & Visualization
-- **Correlation matrix (heatmap):** explored relationships between all numeric and encoded features
-- **Distribution plots (histograms):** visualized the distribution of `CreditScore`, `Age`, `Balance`, and `EstimatedSalary`
-- **Boxplot:** identified outliers in `CreditScore`
-- **Bar charts:** visualized the distribution of `Card Type` and customer `Geography` (country)
+The notebook also contains explanatory text about Chi-Square and Mann–Whitney U tests. Consult the notebook itself for the currently implemented code and outputs; this README does not report results from those tests.
 
-## Key Observations
-- No missing values were found in the dataset.
-- `Complain` and `Exited` show an almost perfect correlation, suggesting complaints are strongly tied to churn.
-- `Balance` shows a notable correlation with customers located in Germany.
-- `Age` shows a moderate positive correlation with churn (`Exited`).
-- A number of low-end outliers were detected in `CreditScore` via boxplot analysis.
-- `EstimatedSalary` appears fairly uniformly distributed across customers.
+## Selected Descriptive Findings
 
-## Tools & Libraries
-- Python
-- Pandas / NumPy
-- Matplotlib / Seaborn
+| Customer group | Customers | Churn rate |
+| --- | ---: | ---: |
+| **Overall** | 10,000 | 20.38% |
+| France | 5,014 | 16.17% |
+| Germany | 2,509 | 32.44% |
+| Spain | 2,477 | 16.67% |
+| Female | 4,543 | 25.07% |
+| Male | 5,457 | 16.47% |
+| Inactive (`IsActiveMember=0`) | 4,849 | 26.87% |
+| Active (`IsActiveMember=1`) | 5,151 | 14.27% |
+| 1 product | 5,084 | 27.71% |
+| 2 products | 4,590 | 7.60% |
+| 3 products | 266 | 82.71% |
+| 4 products | 60 | 100.00% |
 
-## How to Run
-1. Clone this repository
-2. Make sure `Customer-Churn-Records.csv` is in the same directory as the notebook
-3. Install dependencies:
-   ```
-   pip install pandas numpy matplotlib seaborn
-   ```
-4. Open and run the notebook in Jupyter Notebook or JupyterLab
+- `Complain` and `Exited` are almost perfectly associated (approximately **r = 0.9957**). The source data do **not** establish when complaints were recorded relative to churn or whether these fields were generated independently. Treat this relationship cautiously; it does not demonstrate causation.
+- Age has a positive association with churn; activity has a negative association in the notebook's correlation analysis.
+- Some numeric features have IQR-defined outliers. An outlier is not automatically an erroneous record, and the notebook does not recommend removing all outliers without review.
+- Group comparisons are **descriptive**, not causal; very small groups (for example, customers with four products) need special care.
 
-## Future Improvements
-- Apply predictive models (e.g., Logistic Regression, Random Forest) to predict customer churn
-- Perform deeper outlier treatment rather than only identifying them
-- Add feature engineering based on correlation insights (e.g., combining `Complain` and `Satisfaction Score`)
+## Requirements and Execution
 
-## Author
-Feel free to reach out with any questions or suggestions.
-helia.nejadian@gmail.com
+- Python 3 with Jupyter support, or VS Code with the **Python** and **Jupyter** extensions.
+- Libraries: Pandas, NumPy, Matplotlib, Seaborn, SciPy, and a Jupyter kernel (`ipykernel`).
+
+Install dependencies **in the same Python environment as your notebook kernel**:
+
+```bash
+python -m pip install pandas numpy matplotlib seaborn scipy ipykernel
+```
+
+In VS Code, open `data_set_analyze(1).ipynb`, select the correct **Jupyter kernel** at the top right, and run cells **from top to bottom**. Keep `Customer-Churn-Records.csv` in the notebook's working directory. If a relative CSV path fails, verify the working directory or update the `pd.read_csv(...)` path.
+
+If Pylance shows a type warning, distinguish it from actual notebook execution errors; the Jupyter kernel and VS Code interpreter should point to the same Python installation.
+
+## Limitations
+
+- Cross-sectional observational data cannot establish causal effects.
+- The timestamps and origins of `Complain` and `Exited` are unspecified; the extremely high association warrants source verification and may produce target leakage in a predictive setting.
+- Representativeness, the original data collection period, and dataset provenance are not documented here.
+- Group rates should be evaluated together with group sizes.
+- The notebook focuses on EDA; no validated, deployed churn-prediction model is included.
+
+## Future Work
+
+- Obtain time-stamped complaint and churn events and verify dataset provenance.
+- Explore interactions among age, account balance, activity, and products.
+- Fit and evaluate predictive models only after addressing potential leakage and using appropriate train/test splits, class-imbalance-aware metrics, and out-of-sample evaluation.
+- Test customer-retention interventions empirically before asserting business impact.
+
+## Project Documentation
+
+The accompanying Persian Word document presents the problem statement, motivation, objectives, data dictionary, methods, observed findings, practical recommendations, limitations, and execution guidance in a format suitable for an undergraduate university instructor.
